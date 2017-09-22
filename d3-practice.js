@@ -4,22 +4,43 @@
 let baseArray = Array(10).fill(1)
 let scaleUp = baseArray.map((val, i) => val + i)
 let scaleDown = Object.assign([], scaleUp).reverse()
-let numCircles = 10
+let numCircles = 20
+let nodes = d3.range(numCircles).map(() => {
+  return {
+    x: 0 + Math.random() * 500,
+    y: 500,
+    radius: 12
+  }
+})
 
-// let svgCanvas = d3.select(".animation")
-//   .append("svg")
-//   .attr("width", "100vw")
-//   .attr("height", "100vh")
+let svg = d3.select(".animation")
+  .append("svg")
+  .attr("width", 500)
+  .attr("height", 500)
 
-let animation = () => {
-  // svgCanvas.append("circle")
-  //   .attr("fill", "steelblue")
-  //   .attr("r", 20)
-  //   .attr("cx", 50)
-  //   .attr("cy", 50)
-  d3.forceSimulation(d3.selectAll("circle"))
-    .force("collide", d3.forceCollide(40))
-}
+let color = d3.scaleOrdinal(d3.schemeCategory20c)
+
+let simulation = d3.forceSimulation()
+  .force("charge", d3.forceManyBody().strength(-1))
+  .force("position", d3.forceY(0).strength(0.002))
+  .alphaDecay(0.0001)
+
+let node = svg
+  .selectAll("circle")
+  .data(nodes)
+  .enter()
+  .append("circle")
+  .attr("r", d => d.radius)
+  .attr("cx", d => d.x)
+  .attr("cy", d => d.y)
+  .attr("fill", d => color(d.x))
+
+simulation.nodes(nodes)
+  .on("tick", () => {
+    node
+      .attr("cx", d => { return d.x })
+      .attr("cy", d => { return d.y })
+  })
 
 let scaleUpCircle = () => {
   d3.selectAll("circle")
@@ -37,4 +58,3 @@ let scaleDownCircle = () => {
     .attr("r", (d, i) => scaleDown[i] * 20)
     .on("end", scaleUpCircle)
 }
-animation()
