@@ -76,7 +76,8 @@ let color = d3.scaleOrdinal(colors)
 let newSim = forceEnd => {
   return d3.forceSimulation()
     .force("charge", d3.forceManyBody().strength(-1))
-    .force("position", d3.forceY(forceEnd).strength(0.002))
+    .force("positionY", d3.forceY(forceEnd).strength(0.002))
+    .force("positionX", d3.forceX(forceEnd).strength(0.002))
     .alphaDecay(0.0001)
 }
 
@@ -99,8 +100,8 @@ let fadeOut = object => {
     .ease(d3.easeLinear)
     .duration(10000)
     .delay(() => 500)
-    .attr("r", 0)
-    .style("opacity", 0)
+    .attr("r", (d, i) => d.radius/2)
+    .style("opacity", 0.4)
 }
 
 let fadeIn = object => {
@@ -109,8 +110,8 @@ let fadeIn = object => {
     .ease(d3.easeLinear)
     .duration(10000)
     .delay(() => 500)
-    .attr("r", Math.random() * 20)
-    .style("opacity", 1)
+    .attr("r", 0)
+    .style("opacity", 0)
 }
 
 let deleteSmall = curNodes => {
