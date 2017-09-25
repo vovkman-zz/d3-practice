@@ -103,6 +103,16 @@ let fadeOut = object => {
     .style("opacity", 0)
 }
 
+let fadeIn = object => {
+  svg.selectAll(object)
+    .transition()
+    .ease(d3.easeLinear)
+    .duration(10000)
+    .delay(() => 500)
+    .attr("r", Math.random() * 20)
+    .style("opacity", 1)
+}
+
 let deleteSmall = curNodes => {
   let circles = $("circle")
   if (circles.length > 0) {
@@ -132,22 +142,19 @@ let multipleBallSim = (initNodes, forceEnd) => {
   let i = 0
   let j = 0
   let curNodes = Object.assign([], initNodes)
-  let sim = null
+  let simulations = []
   let animateLoop = setInterval(() => {
     if (i < initNodes.length) {
-      sim = newSim(forceEnd)
+      let sim = newSim(forceEnd)
+      simulations.push(sim)
       let node = newCircle(curNodes.slice(0, i))
       startSim(sim, [curNodes[i]], node)
-      // fadeOut("circle")
+      fadeOut("circle")
       i += 1
     } else {
-      // sim
-      //   .force("position", d3.forceY(screenHeight).strength(0.002))
-      // startSim(sim, [curNodes[i - 1]])
-      // clearInterval(animateLoop)
-      sim = newSim(screenHeight)
-      let node = newCircle(curNodes.slice(0, j))
-      startSim(sim, [curNodes[j]], node)
+      simulations[j]
+        .force("position", d3.forceY(screenHeight).strength(0.002))
+      fadeIn("circle")
       j += 1
       j < initNodes.length ? true : clearInterval(animateLoop)
     }
